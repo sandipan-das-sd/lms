@@ -43,6 +43,7 @@ interface AuthContextType {
     register: (data: RegisterData) => Promise<void>;
     refreshToken: () => Promise<void>;
     getCurrentUser: () => Promise<UserProfile | null>;
+    updateAvatar: (avatarUri: string) => Promise<UserProfile | null>;
 }
 
 
@@ -160,8 +161,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
+    const updateAvatar = async (avatarUri: string): Promise<UserProfile | null> => {
+        try {
+            const token = await SecureStore.getItemAsync("accessToken");
+            if (!token) {
+                throw new Error("No access token found");
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', {
+                uri: avatarUri,
+                type: 'image/jpeg',
+                name: 'avatar.jpg',
+            } as any);
+
+            const response = await axios.patch(`${SERVER_URL}/users/avatar`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+
+            if (response.data.success && response.data.data) {
+                setUser(response.data.data);
+                return response.data.data;
+            }
+            return null;
+        } catch (error) {
+            console.error("Update avatar error:", error);
+            throw error;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ userToken, loading, user, login, logout, register, refreshToken, getCurrentUser }}>
+        <AuthContext.Provider value={{ userToken, loading, user, login, logout, register, refreshToken, getCurrentUser, updateAvatar }}>
             {children}
         </AuthContext.Provider>
     );
