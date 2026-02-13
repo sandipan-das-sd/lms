@@ -17,13 +17,32 @@ interface RegisterData {
     username: string;
 }
 
+interface UserProfile {
+    _id: string;
+    username: string;
+    email: string;
+    role: string;
+    avatar: {
+        _id: string;
+        localPath: string;
+        url: string;
+    };
+    isEmailVerified: boolean;
+    loginType: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
 interface AuthContextType {
     userToken: string | null;
     loading: boolean;
+    user: UserProfile | null;
     login: (data: LoginData) => Promise<void>;
     logout: () => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
     refreshToken: () => Promise<void>;
+    getCurrentUser: () => Promise<UserProfile | null>;
 }
 
 
@@ -37,6 +56,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [userToken, setUserToken] = useState<string | null>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -91,10 +111,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             await axios.post(`${SERVER_URL}/users/logout`);
             
-         
             await AsyncStorage.removeItem("accessToken");
             await AsyncStorage.removeItem("refreshToken");
             setUserToken(null);
+            setUser(null);
         } catch (error) {
             console.error("Logout error:", error);
         }
@@ -105,21 +125,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await axios.post(`${SERVER_URL}/users/refresh-token`);
             
             if (response.data.data.accessToken && response.data.data.refreshToken) {
-              
                 await AsyncStorage.setItem("accessToken", response.data.data.accessToken);
                 await AsyncStorage.setItem("refreshToken", response.data.data.refreshToken);
                 setUserToken(response.data.data.accessToken);
             }
         } catch (error) {
             console.error("Refresh token error:", error);
-         
             await logout();
             throw error;
         }
     };
 
+    const getCurrentUser = async (): Promise<UserProfile | null> => {
+        try {
+            const token = await AsyncStorage.getItem("accessToken");
+            if (!token) {
+                return null;
+            }
+
+            const response = await axios.get(`${SERVER_URL}/users/current-user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data.success && response.data.data) {
+                setUser(response.data.data);
+                return response.data.data;
+            }
+            return null;
+        } catch (error) {
+            console.error("Get current user error:", error);
+            return null;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ userToken, loading, login, logout, register, refreshToken }}>
+        <AuthContext.Provider value={{ userToken, loading, user, login, logout, register, refreshToken, getCurrentUser }}>
             {children}
         </AuthContext.Provider>
     );
