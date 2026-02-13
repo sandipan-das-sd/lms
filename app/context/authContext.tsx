@@ -1,7 +1,7 @@
 import { SERVER_URL } from "@/services/services";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     useEffect(() => {
         const checkToken = async () => {
             try {
-                const accessToken = await AsyncStorage.getItem("accessToken");
+                const accessToken = await SecureStore.getItemAsync("accessToken");
                 if (accessToken) {
                     setUserToken(accessToken);
                 }
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await axios.post(`${SERVER_URL}/users/register`, data);
             
            
-          
+        
             if (response.data.success) {
                 console.log("Registration successful:", response.data.message);
             }
@@ -97,8 +97,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await axios.post(`${SERVER_URL}/users/login`, data);
             
             if (response.data.data.accessToken && response.data.data.refreshToken) {
-                await AsyncStorage.setItem("accessToken", response.data.data.accessToken);
-                await AsyncStorage.setItem("refreshToken", response.data.data.refreshToken);
+                await SecureStore.setItemAsync("accessToken", response.data.data.accessToken);
+                await SecureStore.setItemAsync("refreshToken", response.data.data.refreshToken);
                 setUserToken(response.data.data.accessToken);
             }
         } catch (error) {
@@ -111,8 +111,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             await axios.post(`${SERVER_URL}/users/logout`);
             
-            await AsyncStorage.removeItem("accessToken");
-            await AsyncStorage.removeItem("refreshToken");
+            await SecureStore.deleteItemAsync("accessToken");
+            await SecureStore.deleteItemAsync("refreshToken");
             setUserToken(null);
             setUser(null);
         } catch (error) {
@@ -125,8 +125,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await axios.post(`${SERVER_URL}/users/refresh-token`);
             
             if (response.data.data.accessToken && response.data.data.refreshToken) {
-                await AsyncStorage.setItem("accessToken", response.data.data.accessToken);
-                await AsyncStorage.setItem("refreshToken", response.data.data.refreshToken);
+                await SecureStore.setItemAsync("accessToken", response.data.data.accessToken);
+                await SecureStore.setItemAsync("refreshToken", response.data.data.refreshToken);
                 setUserToken(response.data.data.accessToken);
             }
         } catch (error) {
@@ -138,7 +138,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const getCurrentUser = async (): Promise<UserProfile | null> => {
         try {
-            const token = await AsyncStorage.getItem("accessToken");
+            const token = await SecureStore.getItemAsync("accessToken");
             if (!token) {
                 return null;
             }
