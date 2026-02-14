@@ -2,7 +2,6 @@ import { SERVER_URL } from "@/services/services"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import axios from "axios"
 import { createContext, ReactNode, useEffect, useState } from "react"
-import { AuthContext } from "./authContext"
 interface Instructor {
     cell: string
     dob: {

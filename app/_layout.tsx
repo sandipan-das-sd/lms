@@ -1,13 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Redirect, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { useContext } from 'react'
+import { ActivityIndicator, View } from 'react-native'
 import { AuthContext, AuthProvider } from './context/authContext'
 import { CourseProvider } from './context/courseContext'
-import { useContext, useEffect } from 'react'
-import { ActivityIndicator, View } from 'react-native'
 
 export const unstable_settings = {
   initialRouteName: 'screen/auth/login',

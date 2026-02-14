@@ -1,10 +1,9 @@
-import React, { useRef, useContext } from 'react'
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native'
-import { WebView } from 'react-native-webview'
-import { useLocalSearchParams, useRouter } from 'expo-router'
 import { CourseContext } from '@/app/context/courseContext'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Colors } from '@/constants/theme'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useContext, useRef } from 'react'
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { WebView } from 'react-native-webview'
 
 export default function CourseContentViewer() {
     const params = useLocalSearchParams()
