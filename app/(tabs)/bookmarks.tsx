@@ -1,11 +1,11 @@
-import { CourseContext } from '@/app/context/courseContext'
-import { Colors } from '@/constants/theme'
-import Ionicons from '@expo/vector-icons/Ionicons'
-import { useRouter } from 'expo-router'
 import React, { useContext } from 'react'
-import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { CourseContext } from '@/app/context/courseContext'
+import { useRouter } from 'expo-router'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { Colors } from '@/constants/theme'
 
-export default function CourseList() {
+export default function Bookmarks() {
     const context = useContext(CourseContext)
     const router = useRouter()
 
@@ -13,16 +13,11 @@ export default function CourseList() {
         return null
     }
 
-    const {
-        filteredCourses,
-        loading,
-        refreshing,
-        refreshCourses,
-        toggleBookmark,
-        isBookmarked,
-        searchQuery,
-        setSearchQuery
-    } = context
+    const { courses, bookmarkedCourses, toggleBookmark } = context
+
+    const bookmarkedCoursesList = courses.filter(course => 
+        bookmarkedCourses.includes(course.id)
+    )
 
     const handleCoursePress = (courseId: string) => {
         router.push(`/screen/courses/${courseId}` as any)
@@ -52,14 +47,14 @@ export default function CourseList() {
                         style={styles.bookmarkButton}
                     >
                         <Ionicons
-                            name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
+                            name="bookmark"
                             size={24}
-                            color={isBookmarked(item.id) ? Colors.light.tint : Colors.light.icon}
+                            color={Colors.light.tint}
                         />
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.courseTitle} numberOfLines={2}>{item.title}</Text>
-                <Text style={styles.courseDescription} numberOfLines={3}>{item.description}</Text>
+                <Text style={styles.courseDescription} numberOfLines={2}>{item.description}</Text>
                 <View style={styles.courseFooter}>
                     <Text style={styles.courseCategory}>{item.category}</Text>
                     <Text style={styles.coursePrice}>${item.price}</Text>
@@ -68,52 +63,25 @@ export default function CourseList() {
         </TouchableOpacity>
     )
 
-    if (loading && filteredCourses.length === 0) {
-        return (
-            <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color={Colors.light.tint} />
-                <Text style={styles.loadingText}>Loading courses...</Text>
-            </View>
-        )
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Discover Courses</Text>
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color={Colors.light.icon} style={styles.searchIcon} />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search courses..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    {searchQuery ? (
-                        <TouchableOpacity onPress={() => setSearchQuery('')}>
-                            <Ionicons name="close-circle" size={20} color={Colors.light.icon} />
-                        </TouchableOpacity>
-                    ) : null}
-                </View>
+                <Text style={styles.headerTitle}>Bookmarks</Text>
+                <Text style={styles.headerSubtitle}>
+                    {bookmarkedCoursesList.length} {bookmarkedCoursesList.length === 1 ? 'course' : 'courses'} saved
+                </Text>
             </View>
             <FlatList
-                data={filteredCourses}
+                data={bookmarkedCoursesList}
                 renderItem={renderCourseItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContent}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={refreshCourses}
-                        colors={[Colors.light.tint]}
-                    />
-                }
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Ionicons name="school-outline" size={64} color={Colors.light.icon} />
-                        <Text style={styles.emptyText}>No courses found</Text>
+                        <Ionicons name="bookmark-outline" size={64} color={Colors.light.icon} />
+                        <Text style={styles.emptyText}>No bookmarks yet</Text>
                         <Text style={styles.emptySubtext}>
-                            {searchQuery ? 'Try a different search term' : 'Pull down to refresh'}
+                            Start bookmarking courses to save them for later
                         </Text>
                     </View>
                 }
@@ -127,22 +95,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F9FAFB',
     },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F9FAFB',
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: Colors.light.icon,
-    },
     header: {
         backgroundColor: '#fff',
         paddingHorizontal: 16,
         paddingTop: 60,
-        paddingBottom: 12,
+        paddingBottom: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#E5E7EB',
     },
@@ -150,23 +107,11 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         color: '#11181C',
-        marginBottom: 16,
+        marginBottom: 4,
     },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F9FAFB',
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        height: 44,
-    },
-    searchIcon: {
-        marginRight: 8,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-        color: '#11181C',
+    headerSubtitle: {
+        fontSize: 14,
+        color: '#687076',
     },
     listContent: {
         padding: 16,
@@ -184,7 +129,7 @@ const styles = StyleSheet.create({
     },
     thumbnail: {
         width: '100%',
-        height: 200,
+        height: 180,
         backgroundColor: '#E5E7EB',
     },
     courseContent: {
@@ -262,5 +207,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#687076',
         marginTop: 8,
+        textAlign: 'center',
+        paddingHorizontal: 32,
     },
 })

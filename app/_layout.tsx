@@ -8,7 +8,7 @@ import { AuthProvider } from './context/authContext'
 import { CourseProvider } from './context/courseContext'
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  initialRouteName: '(tabs)',
 }
 
 export default function RootLayout() {
@@ -18,12 +18,11 @@ export default function RootLayout() {
     <AuthProvider>
       <CourseProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-            <Stack.Screen name="screen/courses/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="screen/auth/login" options={{ headerShown: false }} />
-            <Stack.Screen name="screen/auth/register" options={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="screen/courses/[id]" />
+            <Stack.Screen name="screen/auth/login" />
+            <Stack.Screen name="screen/auth/register" />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>
