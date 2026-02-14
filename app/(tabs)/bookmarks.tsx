@@ -29,7 +29,7 @@ export default function Bookmarks() {
             onPress={() => handleCoursePress(item.id)}
         >
             <Image
-                source={{ uri: item.thumbnail }}
+                source={{ uri: item.thumbnail || 'https://via.placeholder.com/600x300/667eea/ffffff?text=Course' }}
                 style={styles.thumbnail}
                 resizeMode="cover"
             />
@@ -37,7 +37,7 @@ export default function Bookmarks() {
                 <View style={styles.courseHeader}>
                     <View style={styles.instructorInfo}>
                         <Image
-                            source={{ uri: item.instructor.avatar }}
+                            source={{ uri: item.instructor.avatar || 'https://via.placeholder.com/40/667eea/ffffff?text=' + (item.instructor.name?.[0] || 'U') }}
                             style={styles.instructorAvatar}
                         />
                         <Text style={styles.instructorName}>{item.instructor.name}</Text>
@@ -74,7 +74,7 @@ export default function Bookmarks() {
             <FlatList
                 data={bookmarkedCoursesList}
                 renderItem={renderCourseItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => item.id || `bookmark-${index}`}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>

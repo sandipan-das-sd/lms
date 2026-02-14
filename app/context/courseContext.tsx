@@ -173,8 +173,13 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
     const fetchProducts = async () => {
         try {
             const response = await axios.get(`${SERVER_URL}/public/randomproducts`)
+            console.log('Products API response:', response.data)
             if (response.data.success && response.data.data) {
-                return response.data.data.data || []
+                const products = response.data.data.data || []
+                if (products.length > 0) {
+                    console.log('First product sample:', JSON.stringify(products[0], null, 2))
+                }
+                return products
             }
             return []
         } catch (error) {
@@ -184,22 +189,35 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
     }
 
     const mapProductsToCourses = (products: Product[], instructors: Instructor[]): Course[] => {
-        return products.map((product, index) => {
-            const instructor = instructors[index % instructors.length]
-            return {
-                id: product._id,
-                title: product.name,
-                description: product.description,
-                price: product.price,
-                thumbnail: product.mainImage?.url || '',
-                instructor: {
-                    name: instructor ? `${instructor.name.first} ${instructor.name.last}` : 'Unknown Instructor',
-                    avatar: instructor?.picture?.medium || ''
-                },
-                category: product.category,
-                stock: product.stock
-            }
-        })
+        console.log('mapProductsToCourses - Products count:', products.length)
+        console.log('mapProductsToCourses - Instructors count:', instructors.length)
+        
+        if (products.length === 0) {
+            console.log('No products to map!')
+            return []
+        }
+        
+        const mapped = products
+            .map((product, index) => {
+                console.log(`Mapping product ${index}:`, product._id, product.name)
+                const instructor = instructors[index % instructors.length]
+                return {
+                    id: product._id || `product-${index}`,
+                    title: product.name || 'Untitled Course',
+                    description: product.description || 'No description available',
+                    price: product.price || 0,
+                    thumbnail: product.mainImage?.url || '',
+                    instructor: {
+                        name: instructor ? `${instructor.name.first} ${instructor.name.last}` : 'Unknown Instructor',
+                        avatar: instructor?.picture?.medium || ''
+                    },
+                    category: product.category || 'General',
+                    stock: product.stock || 0
+                }
+            })
+        
+        console.log('Mapped courses result:', mapped.length)
+        return mapped
     }
 
     const fetchCourses = async () => {
@@ -210,8 +228,16 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
                 fetchProducts()
             ])
             
+            console.log('Fetched instructors:', instructorsData.length)
+            console.log('Fetched products:', productsData.length)
+            
             setInstructors(instructorsData)
             const mappedCourses = mapProductsToCourses(productsData, instructorsData)
+            console.log('Mapped courses:', mappedCourses.length)
+            if (mappedCourses.length > 0) {
+                console.log('First course ID:', mappedCourses[0].id)
+                console.log('First course title:', mappedCourses[0].title)
+            }
             setCourses(mappedCourses)
         } catch (error) {
             console.error('Error fetching courses:', error)
@@ -275,7 +301,11 @@ export const CourseProvider = ({ children }: CourseProviderProps) => {
     }
 
     const getCourseById = (courseId: string) => {
-        return courses.find(course => course.id === courseId)
+        console.log('Looking for course with ID:', courseId)
+        console.log('Available courses:', courses.length)
+        const found = courses.find(course => course.id === courseId)
+        console.log('Found course:', found ? found.title : 'NOT FOUND')
+        return found
     }
 
     const filteredCourses = courses.filter(course => {

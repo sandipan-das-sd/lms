@@ -12,6 +12,9 @@ export default function CourseDetails() {
     const context = useContext(CourseContext)
     const [enrolling, setEnrolling] = useState(false)
 
+    console.log('CourseDetails - Received ID:', id)
+    console.log('CourseDetails - Params:', params)
+
     if (!context) {
         return null
     }
@@ -75,7 +78,7 @@ export default function CourseDetails() {
             <ScrollView>
                 <View style={styles.imageContainer}>
                     <Image
-                        source={{ uri: course.thumbnail }}
+                        source={{ uri: course.thumbnail || 'https://via.placeholder.com/800x400/667eea/ffffff?text=Course' }}
                         style={styles.heroImage}
                         resizeMode="cover"
                     />
@@ -100,7 +103,7 @@ export default function CourseDetails() {
                 <View style={styles.content}>
                     <View style={styles.instructorSection}>
                         <Image
-                            source={{ uri: course.instructor.avatar }}
+                            source={{ uri: course.instructor.avatar || 'https://via.placeholder.com/100/667eea/ffffff?text=' + (course.instructor.name?.[0] || 'I') }}
                             style={styles.instructorAvatarLarge}
                         />
                         <View style={styles.instructorDetails}>
@@ -151,6 +154,15 @@ export default function CourseDetails() {
                             <Text style={styles.bulletText}>Learn from industry experts</Text>
                         </View>
                     </View>
+
+                    <TouchableOpacity 
+                        style={styles.viewContentButton}
+                        onPress={() => router.push(`/screen/courses/content?id=${course.id}` as any)}
+                    >
+                        <Ionicons name="book-outline" size={24} color={Colors.light.tint} />
+                        <Text style={styles.viewContentText}>View Course Content</Text>
+                        <Ionicons name="chevron-forward" size={20} color={Colors.light.tint} />
+                    </TouchableOpacity>
 
                     {enrolled && (
                         <View style={styles.enrolledBadge}>
@@ -399,6 +411,23 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    viewContentButton: {
+        backgroundColor: '#fff',
+        borderWidth: 2,
+        borderColor: Colors.light.tint,
+        paddingHorizontal: 24,
+        paddingVertical: 16,
+        borderRadius: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 8,
+    },
+    viewContentText: {
+        color: Colors.light.tint,
         fontSize: 16,
         fontWeight: '600',
     },
