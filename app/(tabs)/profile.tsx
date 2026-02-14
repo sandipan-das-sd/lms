@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } from 'react-native'
 import { AuthContext } from '@/app/context/authContext'
-import { useRouter } from 'expo-router'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/constants/theme'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { useRouter } from 'expo-router'
+import React, { useContext } from 'react'
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export default function Profile() {
     const authContext = useContext(AuthContext)

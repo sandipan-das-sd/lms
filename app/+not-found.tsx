@@ -1,7 +1,7 @@
-import { Link, Stack } from 'expo-router'
-import { StyleSheet, View, Text } from 'react-native'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/constants/theme'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { Link, Stack } from 'expo-router'
+import { StyleSheet, Text, View } from 'react-native'
 
 export default function NotFoundScreen() {
   return (

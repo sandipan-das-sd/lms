@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import { CourseContext } from '@/app/context/courseContext'
-import { useRouter } from 'expo-router'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/constants/theme'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { useRouter } from 'expo-router'
+import React, { useContext } from 'react'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export default function Bookmarks() {
     const context = useContext(CourseContext)
