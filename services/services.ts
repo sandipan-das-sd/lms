@@ -1,1 +1,1 @@
-export const SERVER_URL="https://api.freeapi.app"
+export const SERVER_URL="https://api.freeapi.app/api/v1"
